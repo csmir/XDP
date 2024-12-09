@@ -1,21 +1,31 @@
-﻿using System.Xml;
+﻿using System.Xml.Linq;
 
-namespace XDP.Models
+namespace Xdp.Models
 {
-    public class XdpMember
+    public class XdpMember : XdpElement
     {
-        public string Name { get; }
+        public string? Name { get; }
 
         public XdpString Summary { get; }
 
         public XdpString Remarks { get; }
 
-        public IEnumerable<XdpException> Exceptions { get; }
+        public XdpException[] Exceptions { get; }
 
-        public XdpMember(XmlNode memberNode)
+        public XdpMember(XElement? element)
+            : base(element)
         {
-            Summary = memberNode.SelectSingleNode("summary")?.InnerText;
-            Remarks = memberNode.SelectSingleNode("remarks")?.InnerText;
+            Name = Element.Attribute("name")?.Value;
+
+            Summary = new XdpString(Element.Element("summary"));
+            Remarks = new XdpString(Element.Element("remarks"));
+
+            var exceptions = Element.Elements("exception").ToArray();
+
+            Exceptions = new XdpException[exceptions.Length];
+
+            for (var i = 0; i < exceptions.Length; i++)
+                Exceptions[i] = new XdpException(exceptions[i]);
         }
     }
 }

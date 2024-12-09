@@ -1,19 +1,14 @@
-﻿namespace XDP
+﻿using System.Xml.Linq;
+
+namespace Xdp
 {
     public readonly struct XdpString
     {
         public IEnumerable<XdpStringSegment> Segments { get; }
 
-        public XdpString(IEnumerable<XdpStringSegment> segments)
+        public XdpString(XElement? element)
         {
-            Segments = segments;
-        }
-
-        public static XdpString Read(string stringData)
-        {
-            // parse
-
-            return new XdpString([]);
+            Segments = [];
         }
     }
 }

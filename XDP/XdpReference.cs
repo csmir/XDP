@@ -1,32 +1,31 @@
 ﻿using System.Reflection;
+using System.Xml.Linq;
 
-namespace XDP
+namespace Xdp
 {
     public class XdpContainer
     {
         public List<XdpReference> References { get; } = [];
+
+        public IEnumerable<XdpReference> CrossMatchReferences()
+        {
+            foreach (var reference in References)
+            {
+                reference.References = References.Where(x => x.Name != reference.Name);
+
+                yield return reference;
+            }
+        }
     }
 
-    public class XdpReference
+    public class XdpReference(string name)
     {
-        public string Name { get; }
+        public string Name { get; } = name;
 
-        public Assembly? Assembly { get; set; } = null;
+        public Assembly Assembly { get; set; } = null!;
 
-        public byte[] Documentation { get; set; } = [];
+        public XElement Documentation { get; set; } = null!;
 
-        public XdpReference[] References { get; set; } = [];
-
-        public XdpReference(string name)
-        {
-            Name = name;
-        }
-
-        public XdpReference AttachReferences(IEnumerable<XdpReference> references)
-        {
-            References = references.Where(x => x.Name != Name).ToArray();
-
-            return this;
-        }
+        public IEnumerable<XdpReference> References { get; set; } = [];
     }
 }

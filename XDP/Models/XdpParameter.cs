@@ -1,20 +1,22 @@
-﻿using System.Xml;
+﻿using System.Xml.Linq;
 
-namespace XDP.Models
+namespace Xdp.Models
 {
-    public class XdpParameter
+    public class XdpParameter : XdpElement
     {
         public string Name { get; }
 
-        public bool IsOptional { get; }
+        public string? TypeName { get; }
 
         public XdpString Description { get; }
 
-        public Type Type { get; }
-
-        public XdpParameter(Type parameterType, XmlNode paramNode)
+        public XdpParameter(XElement? element, string? typeName)
+            : base(element)
         {
-            Description = paramNode.SelectSingleNode("description")?.InnerText;
+            TypeName = typeName;
+
+            Name = Element.Attribute("name")!.Value;
+            Description = new XdpString(element);
         }
     }
 }

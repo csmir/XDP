@@ -1,7 +1,10 @@
-﻿using System.Reflection;
-using XDP.Models;
+﻿using System.Collections;
+using System.Reflection;
+using System.Xml;
+using System.Xml.Linq;
+using Xdp.Models;
 
-namespace XDP
+namespace Xdp
 {
     public class XdpReader
     {
@@ -15,7 +18,7 @@ namespace XDP
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public async IAsyncEnumerable<XdpAssembly> ReadFromBuildPath(string path)
+        public IEnumerable<XdpAssembly> FromBuild(string path)
         {
             var files = Directory.GetFiles(path, "*.xml", SearchOption.TopDirectoryOnly);
 
@@ -36,7 +39,12 @@ namespace XDP
                     try
                     {
                         reference.Assembly = Assembly.LoadFile(asmFile);
-                        reference.Documentation = await File.ReadAllBytesAsync(info.FullName);
+
+                        using var stream = File.OpenRead(info.FullName);
+
+                        reference.Documentation = XElement.Load(stream);
+
+                        stream.Close();
                     }
                     catch
                     {
@@ -47,7 +55,7 @@ namespace XDP
                 }
             }
 
-            var references = container.References.Select(x => x.AttachReferences(container.References));
+            var references = container.CrossMatchReferences();
 
             foreach (var reference in references)
             {

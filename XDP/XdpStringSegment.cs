@@ -1,4 +1,4 @@
-﻿namespace XDP
+﻿namespace Xdp
 {
     public enum SegmentMarkup
     {
